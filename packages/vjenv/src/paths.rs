@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn tilde_expands_only_for_home_itself() {
-        let home = Path::new("/home/yurii");
+        let home = Path::new("/home/th3g3ntl3man");
         assert_eq!(expand_tilde("~", home), home);
         assert_eq!(expand_tilde("~/nixconf", home), home.join("nixconf"));
         assert_eq!(expand_tilde("/abs/path", home), Path::new("/abs/path"));

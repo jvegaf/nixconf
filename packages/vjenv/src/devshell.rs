@@ -419,7 +419,7 @@ mod tests {
             ("PATH", "/nix/store/a/bin:/nix/store/b/bin"),
             ("CARGO_HOME", "/x/cargo"),
             ("SHLVL", "3"),
-            ("HOME", "/home/yurii"),
+            ("HOME", "/home/th3g3ntl3man"),
             ("shellHook", "echo hi"),
             ("JJ_CONFIG", "/should/not/leak"),
         ]));

@@ -36,33 +36,34 @@
       pkgs.imagemagick
       pkgs.imv
       pkgs.quickshell
-      pkgs.ffmpeg-full
+      pkgs.ffmpeg
       pkgs.yt-dlp
       pkgs.lazygit
       pkgs.just
       pkgs.mprocs
-      pkgs.devenv
-      {
-        data = pkgs.secretspec;
-        prefix = true;
-      }
-      pkgs.bitwarden-cli
+      pkgs.yazi
+      # pkgs.devenv
+      # {
+      #   data = pkgs.secretspec;
+      #   prefix = true;
+      # }
+      # pkgs.bitwarden-cli
       selfpkgs.nh
       selfpkgs.neovimDynamic
       selfpkgs.qalc
       selfpkgs.lf
       selfpkgs.git
-      selfpkgs.jujutsu
-      selfpkgs.jjui
+      selfpkgs.zsh
+      # selfpkgs.jujutsu
+      # selfpkgs.jjui
       selfpkgs.nix-check-bin
-      selfpkgs.jprocsall
-      selfpkgs.jprocs
-      selfpkgs.dev
-      selfpkgs.vjenv
-      selfpkgs.vjtrees
-      selfpkgs.claude-per
-      selfpkgs.claude-fish
-      selfpkgs.codex
+      # selfpkgs.jprocsall
+      # selfpkgs.jprocs
+      # selfpkgs.dev
+      # selfpkgs.vjenv
+      # selfpkgs.vjtrees
+      # selfpkgs.claude-per
+      # selfpkgs.claude-fish
     ];
   in {
     imports = [self.wrapperModules.fish];
@@ -99,27 +100,27 @@
   };
 
   perSystem = {pkgs, ...}: {
-    packages.jprocs = inputs.wrapper-modules.lib.wrapPackage {
-      inherit pkgs;
-      package = pkgs.mprocs;
-      binName = "jprocs";
-      addFlag = ["--just"];
-      flags = {
-        "--log-dir" = "/tmp/jprocs.log";
-      };
-    };
-
-    packages.jprocsall = inputs.wrapper-modules.lib.wrapPackage {
-      inherit pkgs;
-      package = pkgs.mprocs;
-      binName = "jprocsall";
-      addFlag = ["--just"];
-      flags = {
-        "--on-init" = "{c: restart-all}";
-        "--log-dir" = "/tmp/jprocsall.log";
-      };
-    };
-
+    # packages.jprocs = inputs.wrapper-modules.lib.wrapPackage {
+    #   inherit pkgs;
+    #   package = pkgs.mprocs;
+    #   binName = "jprocs";
+    #   addFlag = ["--just"];
+    #   flags = {
+    #     "--log-dir" = "/tmp/jprocs.log";
+    #   };
+    # };
+    #
+    # packages.jprocsall = inputs.wrapper-modules.lib.wrapPackage {
+    #   inherit pkgs;
+    #   package = pkgs.mprocs;
+    #   binName = "jprocsall";
+    #   addFlag = ["--just"];
+    #   flags = {
+    #     "--on-init" = "{c: restart-all}";
+    #     "--log-dir" = "/tmp/jprocsall.log";
+    #   };
+    # };
+    #
     packages.screenshot = pkgs.writeShellApplication {
       name = "screenshot";
       text = ''${pkgs.grim}/bin/grim -l 0 - | ${pkgs.wl-clipboard}/bin/wl-copy '';
@@ -195,22 +196,22 @@
       $EDITOR "$(nix build "$1" --no-link --print-out-paths)/bin"
     '';
 
-    packages.dev = pkgs.writeTextFile {
-      name = "dev";
-      executable = true;
-      destination = "/bin/dev";
-      text = let
-        vjenv = "${self.packages.${pkgs.stdenv.hostPlatform.system}.vjenv}/bin/vjenv";
-      in ''
-        #!${lib.getExe pkgs.fish}
-        if set -q argv[1]
-            set -l override (${vjenv} use --shell fish $argv[1]); or exit 1
-            echo $override | source
-        end
-        ${vjenv} env fish --no-devshell | source
-        set -gx NIXPKGS_ALLOW_UNFREE 1
-        nix develop --impure -c $SHELL
-      '';
-    };
+    # packages.dev = pkgs.writeTextFile {
+    #   name = "dev";
+    #   executable = true;
+    #   destination = "/bin/dev";
+    #   text = let
+    #     vjenv = "${self.packages.${pkgs.stdenv.hostPlatform.system}.vjenv}/bin/vjenv";
+    #   in ''
+    #     #!${lib.getExe pkgs.fish}
+    #     if set -q argv[1]
+    #         set -l override (${vjenv} use --shell fish $argv[1]); or exit 1
+    #         echo $override | source
+    #     end
+    #     ${vjenv} env fish --no-devshell | source
+    #     set -gx NIXPKGS_ALLOW_UNFREE 1
+    #     nix develop --impure -c $SHELL
+    #   '';
+    # };
   };
 }

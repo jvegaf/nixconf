@@ -61,7 +61,7 @@
     ];
     wsFor = key: (lib.findFirst (e: e.key == key) null wsKeys).ws;
   in {
-    imports = [wlib.wrapperModules.mangowc self.wrapperModules.dynamic];
+    imports = [wlib.wrapperModules.mangowc self.lib.dynamic];
 
     options.terminal = lib.mkOption {
       type = lib.types.str;

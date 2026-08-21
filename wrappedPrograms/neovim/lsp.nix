@@ -21,7 +21,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       pkgs.omnisharp-roslyn
     ];
 
@@ -41,7 +41,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       pkgs.lua-language-server
     ];
 
@@ -61,7 +61,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       pkgs.typescript-language-server
       pkgs.typescript
     ];
@@ -89,7 +89,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       pkgs.astro-language-server
       pkgs.typescript-language-server
       pkgs.typescript
@@ -119,7 +119,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [pkgs.kdePackages.qtdeclarative];
+    runtimePkgs = [pkgs.kdePackages.qtdeclarative];
 
     specs.qml = {
       data = [pkgs.vimPlugins.nvim-lspconfig];
@@ -141,7 +141,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [pkgs.rust-analyzer];
+    runtimePkgs = [pkgs.rust-analyzer];
 
     specs.rust = {
       data = [pkgs.vimPlugins.nvim-lspconfig];
@@ -160,7 +160,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       pkgs.nixd
       pkgs.alejandra
     ];
@@ -195,7 +195,7 @@
   }: {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       pkgs.mdx-language-server
     ];
 
@@ -237,7 +237,7 @@
   in {
     imports = [wlib.wrapperModules.neovim];
 
-    extraPackages = [
+    runtimePkgs = [
       selfpkgs.vjxl-format
     ];
 
@@ -250,7 +250,7 @@
         #lua
         ''
           vim.lsp.config['parser4'] = {
-            cmd = { '/home/yurii/Videos/parser4/target/release/parser4', 'lsp' },
+            cmd = { '/home/th3g3ntl3man/Videos/parser4/target/release/parser4', 'lsp' },
             filetypes = { 'vjxl' },
             root_markers = { '.git' },
             root_dir = vim.fn.getcwd(),
@@ -275,8 +275,8 @@
         #lua
         ''
           vim.lsp.config['vjcustom'] = {
-            -- cmd = { '/home/yurii/Projects/rust/nix-lsp/target/debug/nix-lsp' },
-            cmd = { 'nix', 'run', '/home/yurii/Projects/rust/nix-lsp/' },
+            -- cmd = { '/home/th3g3ntl3man/Projects/rust/nix-lsp/target/debug/nix-lsp' },
+            cmd = { 'nix', 'run', '/home/th3g3ntl3man/Projects/rust/nix-lsp/' },
             filetypes = { 'nix' },
             root_markers = { '.git' },
             root_dir = vim.fn.getcwd(),

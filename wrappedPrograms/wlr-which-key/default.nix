@@ -1,5 +1,5 @@
 {self, ...}: {
-  flake.wrappers.which-key = {...}: {
+  flake.lib.whichKey = {...}: {
     settings = {
       font = "JetBrainsMono Nerd Font 12";
       background = self.theme.base00;
@@ -34,8 +34,8 @@
   in {
     imports = [
       wlib.wrapperModules.wlr-which-key
-      self.wrapperModules.which-key
-      self.wrapperModules.dynamic
+      self.lib.whichKey
+      self.lib.dynamic
     ];
 
     config.settings.menu = [

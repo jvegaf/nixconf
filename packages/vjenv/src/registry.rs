@@ -96,13 +96,13 @@ mod tests {
     #[test]
     fn round_trips_all_fields() {
         let text = r#"
-            ["/home/yurii/Projects/secretspec"]
+            ["/home/th3g3ntl3man/Projects/secretspec"]
             identity = "vimjoyer"
             env = "allow"
             shell = "default"
         "#;
         let reg = Registry::parse(text).unwrap();
-        let e = reg.get(Path::new("/home/yurii/Projects/secretspec")).unwrap();
+        let e = reg.get(Path::new("/home/th3g3ntl3man/Projects/secretspec")).unwrap();
         assert_eq!(e.identity.as_deref(), Some("vimjoyer"));
         assert_eq!(e.env.as_deref(), Some(ENV_ALLOW));
         assert_eq!(e.shell.as_deref(), Some("default"));
@@ -114,14 +114,14 @@ mod tests {
     #[test]
     fn old_per_project_agent_accounts_are_dropped() {
         let text = r#"
-            ["/home/yurii/Projects/secretspec"]
+            ["/home/th3g3ntl3man/Projects/secretspec"]
             identity = "vimjoyer"
             claude = "personal"
             codex = "main"
         "#;
         let reg = Registry::parse(text).unwrap();
         assert_eq!(
-            reg.get(Path::new("/home/yurii/Projects/secretspec"))
+            reg.get(Path::new("/home/th3g3ntl3man/Projects/secretspec"))
                 .unwrap()
                 .identity
                 .as_deref(),
@@ -144,7 +144,7 @@ mod tests {
     fn paths_with_awkward_characters_survive_a_round_trip() {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("projects.toml");
-        let weird = Path::new("/home/yurii/Projects/it's \"quoted\" \\ odd");
+        let weird = Path::new("/home/th3g3ntl3man/Projects/it's \"quoted\" \\ odd");
 
         Registry::update(&path, |r| {
             r.entry_mut(weird).identity = Some("goxore".into());

@@ -125,7 +125,7 @@
         INTERNET_IFACE = "enp14s0";
         WIFI_IFACE = "wlp15s0";
         SSID = "TROJANVIRUS67";
-        PASSPHRASE = "yuriiyuriiyurii";
+        PASSPHRASE = "th3g3ntl3manth3g3ntl3manth3g3ntl3man";
 
         FREQ_BAND = "5"; # 5GHz
         COUNTRY = "UA";

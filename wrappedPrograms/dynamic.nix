@@ -1,5 +1,5 @@
 {
-  flake.wrappers.dynamic = {lib, ...}: {
+  flake.lib.dynamic = {lib, ...}: {
     options.dynamicMode = lib.mkOption {
       type = lib.types.bool;
       default = false;

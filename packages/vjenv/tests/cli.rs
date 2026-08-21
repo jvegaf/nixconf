@@ -9,7 +9,7 @@ markers = [".vjenv-root"]
 
 [identities.goxore]
 name = "Yurii"
-email = "yurii@goxore.com"
+email = "th3g3ntl3man@goxore.com"
 ssh_key = "~/.ssh/primary"
 
 [identities.vimjoyer]
@@ -131,7 +131,7 @@ fn an_assigned_project_emits_the_full_identity() {
          export GIT_CONFIG_KEY_0='user.name'\n\
          export GIT_CONFIG_VALUE_0='Yurii'\n\
          export GIT_CONFIG_KEY_1='user.email'\n\
-         export GIT_CONFIG_VALUE_1='yurii@goxore.com'\n\
+         export GIT_CONFIG_VALUE_1='th3g3ntl3man@goxore.com'\n\
          export GIT_CONFIG_KEY_2='core.sshCommand'\n\
          export GIT_CONFIG_VALUE_2='ssh -i {home}/.ssh/primary -o IdentitiesOnly=yes'\n\
          export GIT_SSH_COMMAND='ssh -i {home}/.ssh/primary -o IdentitiesOnly=yes'\n\
@@ -153,7 +153,7 @@ fn the_jj_fragment_is_written_when_the_identity_is_emitted() {
     let fragment = s.home.join(".run/vjenv/goxore.jj.toml");
     let text = std::fs::read_to_string(&fragment).expect("fragment should exist");
     let parsed: toml::Value = toml::from_str(&text).unwrap();
-    assert_eq!(parsed["user"]["email"].as_str(), Some("yurii@goxore.com"));
+    assert_eq!(parsed["user"]["email"].as_str(), Some("th3g3ntl3man@goxore.com"));
 }
 
 #[test]

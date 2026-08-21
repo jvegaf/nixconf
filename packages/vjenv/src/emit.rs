@@ -86,7 +86,7 @@ mod tests {
         "--flag",
         "",
         "emoji 🐟 and ünïcode",
-        "ssh -i /home/yurii/.ssh/id_rsa -o IdentitiesOnly=yes",
+        "ssh -i /home/th3g3ntl3man/.ssh/id_rsa -o IdentitiesOnly=yes",
     ];
 
     fn unquote(quoted: &str, shell: Shell) -> String {

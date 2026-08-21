@@ -139,7 +139,7 @@ mod tests {
 
         [identities.goxore]
         name = "Yurii"
-        email = "yurii@goxore.com"
+        email = "th3g3ntl3man@goxore.com"
         ssh_key = "~/.ssh/primary"
 
         [identities.vimjoyer]
@@ -149,7 +149,7 @@ mod tests {
     "#;
 
     fn sample() -> Config {
-        Config::parse(SAMPLE, Path::new("/home/yurii")).unwrap()
+        Config::parse(SAMPLE, Path::new("/home/th3g3ntl3man")).unwrap()
     }
 
     #[test]
@@ -158,11 +158,11 @@ mod tests {
         assert_eq!(
             c.roots.standalone,
             vec![
-                PathBuf::from("/home/yurii/NewVideos"),
-                PathBuf::from("/home/yurii/nixconf")
+                PathBuf::from("/home/th3g3ntl3man/NewVideos"),
+                PathBuf::from("/home/th3g3ntl3man/nixconf")
             ]
         );
-        assert_eq!(c.roots.containers, vec![PathBuf::from("/home/yurii/Projects")]);
+        assert_eq!(c.roots.containers, vec![PathBuf::from("/home/th3g3ntl3man/Projects")]);
         assert_eq!(c.roots.markers, vec![".vjenv-root", ".VJCROOT"]);
     }
 
@@ -172,13 +172,13 @@ mod tests {
         assert_eq!(c.identity_names(), vec!["goxore", "vimjoyer"]);
         let g = c.identity("goxore").unwrap();
         assert_eq!(g.name.as_deref(), Some("Yurii"));
-        assert_eq!(g.email.as_deref(), Some("yurii@goxore.com"));
-        assert_eq!(g.ssh_key, Some(PathBuf::from("/home/yurii/.ssh/primary")));
+        assert_eq!(g.email.as_deref(), Some("th3g3ntl3man@goxore.com"));
+        assert_eq!(g.ssh_key, Some(PathBuf::from("/home/th3g3ntl3man/.ssh/primary")));
     }
 
     #[test]
     fn empty_config_is_valid_and_yields_nothing() {
-        let c = Config::parse("", Path::new("/home/yurii")).unwrap();
+        let c = Config::parse("", Path::new("/home/th3g3ntl3man")).unwrap();
         assert!(c.identities.is_empty());
         assert!(c.roots.standalone.is_empty());
     }

@@ -52,7 +52,7 @@ in {
 
       [identities.goxore]
       name = "Yurii"
-      email = "yurii@goxore.com"
+      email = "th3g3ntl3man@goxore.com"
       ssh_key = "~/.ssh/primary"
 
       [identities.vimjoyer]
