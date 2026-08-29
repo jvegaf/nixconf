@@ -1,7 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
 
     # The framework I use to structure the flake, module imports are automatic via custom function below
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -19,31 +18,30 @@
     };
 
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+    nixvim.url = "github:nix-community/nixvim";
+    nixvim.inputs.flake-parts.follows = "flake-parts";
+    razerdaemon.url = "github:encomjp/razer-control-revived";
+    razerdaemon.inputs.nixpkgs.follows = "nixpkgs";
 
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-gaming.url = "github:fufexan/nix-gaming";
-
-    nixpkgs-multiverse.url = "github:fzakaria/nixpkgs-multiverse";
   };
 
   # Import all .nix files from current directory except flake.nix recursively
-  outputs = inputs: let
-    inherit (inputs.nixpkgs) lib;
-    inherit (lib.fileset) toList fileFilter;
+  outputs =
+    inputs:
+    let
+      inherit (inputs.nixpkgs) lib;
+      inherit (lib.fileset) toList fileFilter;
 
-    isNixModule = file:
-      file.hasExt "nix"
-      && file.name != "flake.nix"
-      && !lib.hasPrefix "_" file.name;
+      isNixModule = file: file.hasExt "nix" && file.name != "flake.nix" && !lib.hasPrefix "_" file.name;
 
-    importTree = path:
-      toList (fileFilter isNixModule path);
+      importTree = path: toList (fileFilter isNixModule path);
 
-    mkFlake = inputs.flake-parts.lib.mkFlake {inherit inputs;};
-  in
-    mkFlake {imports = importTree ./.;};
+      mkFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; };
+    in
+    mkFlake { imports = importTree ./.; };
 }
