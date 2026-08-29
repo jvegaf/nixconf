@@ -3,103 +3,105 @@
   inputs,
   self,
   ...
-}: {
-  flake.wrappers.environment = {pkgs, ...}: let
-    selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
+}:
+{
+  flake.wrappers.environment =
+    { pkgs, ... }:
+    let
+      selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
 
-    packageOf = entry: entry.data or entry;
+      packageOf = entry: entry.data or entry;
 
-    runtimeTools = [
-      pkgs.nil
-      pkgs.nixd
-      pkgs.statix
-      pkgs.alejandra
-      pkgs.manix
-      pkgs.nix-inspect
-      pkgs.file
-      pkgs.unzip
-      pkgs.zip
-      pkgs.p7zip
-      pkgs.wget
-      pkgs.killall
-      pkgs.sshfs
-      pkgs.fzf
-      pkgs.htop
-      selfpkgs.btop
-      pkgs.eza
-      pkgs.fd
-      pkgs.zoxide
-      pkgs.dust
-      pkgs.ripgrep
-      pkgs.fastfetch
-      pkgs.tree-sitter
-      pkgs.imagemagick
-      pkgs.imv
-      pkgs.quickshell
-      pkgs.ffmpeg
-      pkgs.yt-dlp
-      pkgs.lazygit
-      pkgs.just
-      pkgs.mprocs
-      pkgs.yazi
-      # pkgs.devenv
-      # {
-      #   data = pkgs.secretspec;
-      #   prefix = true;
-      # }
-      # pkgs.bitwarden-cli
-      selfpkgs.nh
-      selfpkgs.neovimDynamic
-      selfpkgs.qalc
-      selfpkgs.lf
-      selfpkgs.git
-      selfpkgs.zsh
-      # selfpkgs.jujutsu
-      # selfpkgs.jjui
-      selfpkgs.nix-check-bin
-      # selfpkgs.jprocsall
-      # selfpkgs.jprocs
-      # selfpkgs.dev
-      # selfpkgs.vjenv
-      # selfpkgs.vjtrees
-      # selfpkgs.claude-per
-      # selfpkgs.claude-fish
-    ];
-  in {
-    imports = [self.wrapperModules.fish];
-    binName = "fish";
-    runtimePkgs = runtimeTools;
+      runtimeTools = [
+        pkgs.nil
+        pkgs.nixd
+        pkgs.statix
+        pkgs.alejandra
+        pkgs.manix
+        pkgs.nix-inspect
+        pkgs.file
+        pkgs.unzip
+        pkgs.zip
+        pkgs.p7zip
+        pkgs.wget
+        pkgs.killall
+        pkgs.sshfs
+        pkgs.fzf
+        pkgs.htop
+        selfpkgs.btop
+        pkgs.eza
+        pkgs.fd
+        pkgs.zoxide
+        pkgs.dust
+        pkgs.ripgrep
+        pkgs.fastfetch
+        pkgs.tree-sitter
+        pkgs.imagemagick
+        pkgs.imv
+        pkgs.quickshell
+        pkgs.ffmpeg
+        pkgs.yt-dlp
+        pkgs.lazygit
+        pkgs.just
+        pkgs.mprocs
+        pkgs.yazi
+        pkgs.zsh-syntax-highlighting
+        pkgs.zsh-autosuggestions
+        # pkgs.devenv
+        # {
+        #   data = pkgs.secretspec;
+        #   prefix = true;
+        # }
+        # pkgs.bitwarden-cli
+        selfpkgs.nh
+        selfpkgs.neovimDynamic
+        selfpkgs.qalc
+        selfpkgs.lf
+        selfpkgs.git
+        selfpkgs.zsh
+        # selfpkgs.jujutsu
+        # selfpkgs.jjui
+        selfpkgs.nix-check-bin
+        # selfpkgs.jprocsall
+        # selfpkgs.jprocs
+        # selfpkgs.dev
+        # selfpkgs.vjenv
+        # selfpkgs.vjtrees
+        # selfpkgs.claude-per
+        # selfpkgs.claude-fish
+      ];
+    in
+    {
+      imports = [ self.wrapperModules.zsh ];
+      binName = "zsh";
+      runtimePkgs = runtimeTools;
 
-    prefixVar = [
-      [
-        "fish_complete_path"
-        ":"
-        (lib.makeSearchPath "share/fish/vendor_completions.d" (map packageOf runtimeTools))
-      ]
-    ];
+      env = {
+        EDITOR = lib.getExe selfpkgs.neovimDynamic;
+        __NIXOS_SET_ENVIRONMENT_DONE = "1";
 
-    env = {
-      EDITOR = lib.getExe selfpkgs.neovimDynamic;
-      __NIXOS_SET_ENVIRONMENT_DONE = "1";
-
-      FZF_DEFAULT_OPTS = with self.theme;
-        lib.concatStringsSep " " [
-          "--color=bg+:${base01},bg:${base00},spinner:${base0C},hl:${base0D}"
-          "--color=fg:${base04},header:${base0D},info:${base0A},pointer:${base0C}"
-          "--color=marker:${base0C},fg+:${base06},prompt:${base0A},hl+:${base0D}"
-          "--color=border:${base02},gutter:${base00},query:${base06}"
-        ];
+        FZF_DEFAULT_OPTS =
+          with self.theme;
+          lib.concatStringsSep " " [
+            "--color=bg+:${base01},bg:${base00},spinner:${base0C},hl:${base0D}"
+            "--color=fg:${base04},header:${base0D},info:${base0A},pointer:${base0C}"
+            "--color=marker:${base0C},fg+:${base06},prompt:${base0A},hl+:${base0D}"
+            "--color=border:${base02},gutter:${base00},query:${base06}"
+          ];
+      };
     };
-  };
 
-  flake.wrappers.terminal = {pkgs, ...}: let
-    selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
-  in {
-    imports = [self.wrapperModules.kitty];
-    shell = lib.getExe selfpkgs.environment;
-  };
+  flake.wrappers.terminal =
+    { pkgs, ... }:
+    let
+      selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
+    in
+    {
+      imports = [ self.wrapperModules.kitty ];
+      shell = lib.getExe selfpkgs.environment;
+    };
 
-  perSystem = {pkgs, ...}: {
+  perSystem = { pkgs, ... }: {
     # packages.jprocs = inputs.wrapper-modules.lib.wrapPackage {
     #   inherit pkgs;
     #   package = pkgs.mprocs;
@@ -123,7 +125,7 @@
     #
     packages.screenshot = pkgs.writeShellApplication {
       name = "screenshot";
-      text = ''${pkgs.grim}/bin/grim -l 0 - | ${pkgs.wl-clipboard}/bin/wl-copy '';
+      text = "${pkgs.grim}/bin/grim -l 0 - | ${pkgs.wl-clipboard}/bin/wl-copy ";
     };
 
     packages.screenshotFull = pkgs.writeShellApplication {
@@ -133,13 +135,16 @@
 
     packages.pipeSwappy = pkgs.writeShellApplication {
       name = "pipeSwappy";
-      text = ''${pkgs.wl-clipboard}/bin/wl-paste | ${pkgs.swappy}/bin/swappy -f -'';
+      text = "${pkgs.wl-clipboard}/bin/wl-paste | ${pkgs.swappy}/bin/swappy -f -";
     };
 
     packages.vol = pkgs.writeShellApplication {
       name = "vol";
 
-      runtimeInputs = [pkgs.playerctl pkgs.gawk];
+      runtimeInputs = [
+        pkgs.playerctl
+        pkgs.gawk
+      ];
 
       text = ''
         set -euo pipefail
@@ -166,7 +171,11 @@
     packages.volYtMusic = pkgs.writeShellApplication {
       name = "vol-ytmusic";
 
-      runtimeInputs = [pkgs.playerctl pkgs.gawk pkgs.jq];
+      runtimeInputs = [
+        pkgs.playerctl
+        pkgs.gawk
+        pkgs.jq
+      ];
 
       text = ''
         set -euo pipefail

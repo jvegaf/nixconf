@@ -1,97 +1,72 @@
-{self, ...}: {
-  flake.wrappers.zsh = {
-    wlib,
-    pkgs,
-    lib,
-    ...
-  }: {
-    imports = [wlib.wrapperModules.zsh];
-    flags."--no-config" = false;
-    configFile.content = let
-      selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
-    in
-      # zsh
-      ''
-    # Aliases
-    alias sw="nh os switch"
-    alias upd="nh os switch --update"
-    alias hms="nh home switch"
-    alias cdf="cd ~/flakes"
+{
+  ...
+}:
+{
+  flake.wrappers.zsh =
+    {
+      wlib,
+      config,
+      ...
+    }:
+    {
+      imports = [ wlib.wrapperModules.zsh ];
 
-    alias ls="eza -lh --group-directories-first --icons=auto"
-    alias l="ls"
-    alias ll="ls -a"
-    alias lt="eza --tree --level=2 --long --icons --git"
-    alias llt="lt -a"
-    alias rebuild="sudo nixos-rebuild switch"
-    alias freb="sudo nixos-rebuild switch --flake ~/nixdots#razer-blade"
-    alias jup="just up"
-    alias jde="just deploy"
-    alias srb="sudo nixos-rebuild --flake ~/nixconf#surface"
-    alias r="ranger"
-    alias v="nvim"
-    alias se="sudoedit"
-    alias y="yazi"
-    alias b="bat"
-    alias rmd="rm -rf"
-    alias dots="cd ~/nixdots"
-    alias doc="cd ~/Documents"
-    alias dw="cd ~/Downloads"
-    alias dt="cd ~/Desktop"
-    alias cdc="cd ~/Code"
-    alias mx="tmux"
-    alias grep="grep --color=auto"
-    alias ffe="fastfetch"
-    alias bt="btop"
-    alias jctl="journalctl -p 3 -xb"
-    alias lzd="lazydocker"
-    alias gb="nix-collect-garbage -d"
-    alias clean="nh clean all --keep 3"
+      config = {
+        zshAliases = {
+          sw = "nh os switch";
+          upd = "nh os switch --update";
+          hms = "nh home switch";
 
-    alias g="lazygit"
-    alias gs="git status"
-    alias ga="git add"
-    alias gaa="git add ."
-    alias gc="git commit"
-    alias gps="git push"
-    alias gpl="git pull --rebase --autostash"
-    alias gco="git checkout"
-    alias gcl="git clone"
+          env-ini = "devenv init --include-envrc";
+          ls = "eza -lh --group-directories-first --icons=auto";
+          l = "ls";
+          ll = "ls -a";
+          lt = "eza --tree --level=2 --long --icons --git";
+          llt = "lt -a";
+          rebuild = "sudo nixos-rebuild switch";
+          freb = "sudo nixos-rebuild switch --flake ~/nixdots#razer-blade";
+          frem = "sudo nixos-rebuild switch --flake ~/nixdots#fs0ciety";
+          jup = "just up";
+          jde = "just deploy";
+          r = "ranger";
+          v = "nvim";
+          se = "sudoedit";
+          y = "yazi";
+          b = "bat";
+          rmd = "rm -rf";
+          dots = "cd ~/nixdots";
+          doc = "cd ~/Documents";
+          dw = "cd ~/Downloads";
+          dt = "cd ~/Desktop";
+          cdc = "cd ~/Code";
+          mx = "tmux";
+          grep = "grep --color=auto";
+          "v." = "(nvim $PWD &>/dev/null &)";
+          "o." = "($FILE_MANAGER $PWD &>/dev/null &)";
+          ffe = "fastfetch";
+          bt = "btop";
+          jctl = "journalctl -p 3 -xb";
+          lzd = "lazydocker";
+          edalias = "nvim ~/nixdots/home-manager/modules/zsh.nix";
 
-    alias ".."="cd .."
-    alias "..."="cd ../.."
-    alias "...."="cd ../../.."
+          gb = "nix-collect-garbage -d";
+          clean = "nh clean all --keep 3";
 
-    # History
-    HISTSIZE=10000
-    SAVEHIST=10000
+          g = "lazygit";
+          gs = "git status";
+          ga = "git add";
+          gaa = "git add .";
+          gc = "git commit";
+          gps = "git push";
+          gpl = "git pull --rebase --autostash";
+          gco = "git checkout";
+          gcl = "git clone";
 
-    # Vi mode
-    bindkey -v
+          ".." = "cd ..";
+          "..." = "cd ../..";
+          "...." = "cd ../../..";
+        };
 
-    # Completion
-    autoload -Uz compinit && compinit
-    zstyle ':completion:*' menu select
-    zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-
-    # Syntax highlighting
-    if [[ -f ${lib.getExe pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
-      source ${lib.getExe pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    fi
-
-    # Autosuggestions
-    if [[ -f ${lib.getExe pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-      source ${lib.getExe pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    fi
-
-    # Keybindings
-    bindkey '^[[A' history-search-backward
-    bindkey '^[[B' history-search-forward
-    bindkey '^[[H' beginning-of-line
-    bindkey '^[[F' end-of-line
-    bindkey '^[[3~' delete-char
-    bindkey '^[[1;5C' forward-word
-    bindkey '^[[1;5D' backward-word
-      '';
-  };
+      };
+    };
 }
