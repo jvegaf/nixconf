@@ -54,7 +54,6 @@
         selfpkgs.nixvim
         selfpkgs.qalc
         selfpkgs.git
-        selfpkgs.zsh
         selfpkgs.nix-check-bin
       ];
     in

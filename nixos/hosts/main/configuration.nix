@@ -126,7 +126,6 @@
       # '';
 
       hardware = {
-        intelgpu.driver = "i915";
         enableRedistributableFirmware = true;
         nvidia = {
           open = true;
