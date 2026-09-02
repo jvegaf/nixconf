@@ -20,6 +20,8 @@
         extraGroups = [
           "wheel"
           "networkmanager"
+          "video"
+          "audio"
         ];
         shell = self.packages.${pkgs.stdenv.hostPlatform.system}.environment;
 
@@ -34,6 +36,8 @@
         "Downloads"
         "Documents"
         "Code"
+        "Music"
+        "Desktop"
 
         ".ssh"
         ".local/share/keyrings"
@@ -42,17 +46,18 @@
         ".local/state/vjenv"
         ".local/share/vjenv"
 
-        ".local/share/claude-per"
-        ".local/share/claude-fish"
+        # ".local/share/claude-per"
+        # ".local/share/claude-fish"
         ".local/share/opencode"
       ];
 
       persistance.cache.directories = [
-        ".config/Bitwarden CLI"
+        # ".config/Bitwarden CLI"
 
         ".local/share/zoxide"
         ".local/share/nvim"
         ".local/share/fish"
+        ".local/share/zsh"
         ".config/nvim"
       ];
     };

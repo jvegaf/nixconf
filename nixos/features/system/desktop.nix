@@ -91,16 +91,16 @@
 
       security.polkit.enable = true;
 
-      hardware = {
-        enableAllFirmware = true;
-
-        bluetooth.enable = true;
-        bluetooth.powerOnBoot = true;
-
-        opengl = {
-          enable = true;
-          driSupport32Bit = true;
-        };
-      };
+      # hardware = {
+      #   enableAllFirmware = true;
+      #
+      #   bluetooth.enable = true;
+      #   bluetooth.powerOnBoot = true;
+      #
+      #   graphics = {
+      #     enable = true;
+      #     driSupport32Bit = true;
+      #   };
+      # };
     };
 }

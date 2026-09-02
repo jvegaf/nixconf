@@ -51,6 +51,7 @@
         selfpkgs.nh
         selfpkgs.vjenv
         # selfpkgs.neovimDynamic
+        selfpkgs.nixvim
         selfpkgs.qalc
         selfpkgs.git
         selfpkgs.zsh
@@ -64,6 +65,7 @@
 
       env = {
         # EDITOR = lib.getExe selfpkgs.neovimDynamic;
+        EDITOR = lib.getExe selfpkgs.nixvim;
         __NIXOS_SET_ENVIRONMENT_DONE = "1";
 
         FZF_DEFAULT_OPTS =

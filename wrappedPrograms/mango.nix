@@ -177,14 +177,14 @@
           repeat_rate = 40;
           repeat_delay = 250;
           numlockon = 0;
-          xkb_rules_layout = "us,ru,ua";
-          xkb_rules_options = "grp:alt_shift_toggle";
+          xkb_rules_layout = "us";
+          # xkb_rules_options = "grp:alt_shift_toggle";
 
           disable_trackpad = 0;
           tap_to_click = 1;
           tap_and_drag = 1;
           drag_lock = 1;
-          trackpad_natural_scrolling = 0;
+          trackpad_natural_scrolling = 1;
           disable_while_typing = 1;
           left_handed = 0;
           middle_button_emulation = 0;
@@ -215,10 +215,10 @@
 
           tagrule = map (id: "id:${toString id},layout_name:tile") (lib.range 1 17);
 
-          layerrule = [
-            "animation_type_open:zoom,layer_name:vjshell-launcher"
-            "animation_type_close:zoom,layer_name:vjshell-launcher"
-          ];
+          # layerrule = [
+          #   "animation_type_open:zoom,layer_name:vjshell-launcher"
+          #   "animation_type_close:zoom,layer_name:vjshell-launcher"
+          # ];
 
           bind =
             let

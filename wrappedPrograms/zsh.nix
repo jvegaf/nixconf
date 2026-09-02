@@ -1,7 +1,4 @@
 {
-  ...
-}:
-{
   flake.wrappers.zsh =
     {
       wlib,
@@ -34,7 +31,7 @@
           y = "yazi";
           b = "bat";
           rmd = "rm -rf";
-          dots = "cd ~/nixdots";
+          dots = "cd ~/nixconf";
           doc = "cd ~/Documents";
           dw = "cd ~/Downloads";
           dt = "cd ~/Desktop";
@@ -47,7 +44,7 @@
           bt = "btop";
           jctl = "journalctl -p 3 -xb";
           lzd = "lazydocker";
-          edalias = "nvim ~/nixdots/home-manager/modules/zsh.nix";
+          # edalias = "nvim ~/nixdots/home-manager/modules/zsh.nix";
 
           gb = "nix-collect-garbage -d";
           clean = "nh clean all --keep 3";

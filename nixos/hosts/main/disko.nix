@@ -2,7 +2,7 @@
   flake.diskoConfigurations.hostMain = {
     disko.devices = {
       disk.main = {
-        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S736NU0W100374K";
+        device = "/dev/disk/by-id/nvme-CT500P1SSD8_2004E284F1D7";
         type = "disk";
         content = {
           type = "gpt";
@@ -57,7 +57,7 @@
               size = "100%FREE";
               content = {
                 type = "btrfs";
-                extraArgs = ["-f"];
+                extraArgs = [ "-f" ];
 
                 subvolumes = {
                   "/root" = {
@@ -65,12 +65,18 @@
                   };
 
                   "/persist" = {
-                    mountOptions = ["subvol=persist" "noatime"];
+                    mountOptions = [
+                      "subvol=persist"
+                      "noatime"
+                    ];
                     mountpoint = "/persist";
                   };
 
                   "/nix" = {
-                    mountOptions = ["subvol=nix" "noatime"];
+                    mountOptions = [
+                      "subvol=nix"
+                      "noatime"
+                    ];
                     mountpoint = "/nix";
                   };
                 };
