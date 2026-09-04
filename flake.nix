@@ -1,47 +1,57 @@
+# DO-NOT-EDIT. This file was auto-generated using github:vic/flake-file.
+# Use `nix run .#write-flake` to regenerate it.
 {
+
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
+
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    # The framework I use to structure the flake, module imports are automatic via custom function below
+    agenix = {
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+      url = "github:ryantm/agenix";
+    };
+    brew-api = {
+      flake = false;
+      url = "github:BatteredBunny/brew-api";
+    };
+    brew-nix = {
+      inputs = {
+        brew-api.follows = "brew-api";
+        nix-darwin.follows = "nix-darwin";
+        nixpkgs.follows = "nixpkgs";
+      };
+      url = "github:BatteredBunny/brew-nix";
+    };
+    determinate = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+    };
+    flake-file.url = "github:vic/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";
-
+    home-manager = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager/release-25.11";
+    };
     impermanence.url = "github:nix-community/impermanence";
-    persist-retro.url = "github:Geometer1729/persist-retro";
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
+    import-tree.url = "github:vic/import-tree";
+    nix-darwin = {
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+      url = "github:LnL7/nix-darwin/nix-darwin-25.11";
     };
-
-    nix-index-database = {
-      url = "github:Mic92/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    packages = {
+      flake = false;
+      url = "path:./packages";
     };
-
-    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
-    nixvim.url = "github:nix-community/nixvim";
-    nixvim.inputs.flake-parts.follows = "flake-parts";
-    razerdaemon.url = "github:encomjp/razer-control-revived";
-    razerdaemon.inputs.nixpkgs.follows = "nixpkgs";
-
-    hjem = {
-      url = "github:feel-co/hjem";
-      inputs.nixpkgs.follows = "nixpkgs";
+    pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
+    secrets = {
+      flake = false;
+      url = "path:./secrets";
     };
-
   };
 
-  # Import all .nix files from current directory except flake.nix recursively
-  outputs =
-    inputs:
-    let
-      inherit (inputs.nixpkgs) lib;
-      inherit (lib.fileset) toList fileFilter;
-
-      isNixModule = file: file.hasExt "nix" && file.name != "flake.nix" && !lib.hasPrefix "_" file.name;
-
-      importTree = path: toList (fileFilter isNixModule path);
-
-      mkFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; };
-    in
-    mkFlake { imports = importTree ./.; };
 }
