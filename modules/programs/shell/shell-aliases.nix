@@ -1,0 +1,219 @@
+{ delib, moduleSystem, lib, pkgs, ... }:
+delib.module {
+  name = "programs.shell-aliases";
+  options = delib.singleEnableOption true;
+
+  home.ifEnabled =
+    { myconfig, ... }:
+    let
+      pythonEnv = pkgs.python3.withPackages (ps: [ ps.requests ]);
+      npu = pkgs.writeShellScriptBin "npu" ''
+        export NIX_PREFETCH_URL="${pkgs.nix}/bin/nix-prefetch-url"
+        exec ${pythonEnv}/bin/python3 ${./npu.py} "$@"
+      '';
+
+      tpmReenroll = pkgs.writeShellScriptBin "tpm-reenroll" ''
+        set -euo pipefail
+        pcrs="0+2+7"
+        mappers=$(${pkgs.util-linux}/bin/lsblk -rno NAME,TYPE \
+          | ${pkgs.gawk}/bin/awk '$2=="crypt"{print $1}')
+        if [ -z "$mappers" ]; then
+          echo "No active LUKS/crypt devices found - nothing to do."
+          exit 0
+        fi
+        sudo -v
+        for name in $mappers; do
+          dev=$(sudo ${pkgs.cryptsetup}/bin/cryptsetup status "$name" \
+            | ${pkgs.gawk}/bin/awk '/device:/{print $2}')
+          [ -z "$dev" ] && { echo "Could not resolve backing device for '$name', skipping."; continue; }
+          echo "Re-enrolling TPM2 (PCRs $pcrs) for $name -> $dev"
+          sudo ${pkgs.systemd}/bin/systemd-cryptenroll --wipe-slot=tpm2 "$dev" || true
+          sudo ${pkgs.systemd}/bin/systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs="$pcrs" "$dev"
+        done
+        echo "Done. Reboot to confirm auto-unlock."
+      '';
+
+      flakeDir = "~/nix";
+      safeEditor = myconfig.constants.editor;
+      isImpure = myconfig.constants.nixImpure or false;
+      isNixOS = moduleSystem == "nixos";
+      isDarwin = moduleSystem == "darwin";
+      isHome = moduleSystem == "home";
+
+      nixosSwitchCmd =
+        if isImpure then "sudo nixos-rebuild switch --flake . --impure" else "nh os switch ${flakeDir}";
+
+      nixosUpdateCmd =
+        if isImpure then
+          "nix flake update && sudo nixos-rebuild switch --flake . --impure"
+        else
+          "nh os switch --update ${flakeDir}";
+
+      nixosBootCmd =
+        if isImpure then
+          "sudo nixos-rebuild boot --flake . --impure"
+        else
+          "nh os boot ${flakeDir}";
+
+      nixosTestCmd =
+        if isImpure then
+          "sudo nixos-rebuild test --flake . --impure"
+        else
+          "nh os test ${flakeDir}";
+
+      atticEnabled =
+        (myconfig.attic.enable or false) && (myconfig.attic.push or false);
+      cachixEnabled =
+        (myconfig.cachix.enable or false) && (myconfig.cachix.push or false);
+
+      atticServer = myconfig.attic.serverUrl;
+      atticCache = myconfig.attic.cacheName;
+      atticToken = myconfig.attic.authTokenPath;
+      atticPush =
+        "attic login nas-push ${atticServer} \"$(cat ${atticToken})\""
+        + " && nix path-info -r /run/current-system | attic push -j 8 nas-push:${atticCache} --stdin";
+
+      cName = myconfig.cachix.name;
+      cachixTokenPath = myconfig.cachix.authTokenPath or "";
+      cachixPush =
+        if cachixTokenPath != "" then
+          "nix path-info -r /run/current-system | env CACHIX_AUTH_TOKEN=$(cat ${cachixTokenPath}) cachix push ${cName}"
+        else
+          "nix path-info -r /run/current-system | cachix push ${cName}";
+
+      shc = script: "sh -c ${lib.escapeShellArg script}";
+
+      atticPushAlias = shc atticPush;
+      cachixPushAlias = shc cachixPush;
+
+      wrapCaches =
+        cmd:
+        let
+          pushLines =
+            (lib.optional atticEnabled "${atticPush} || true")
+            ++ (lib.optional cachixEnabled "${cachixPush} || true");
+        in
+        if pushLines == [ ] then cmd
+        else "${cmd} && ${shc (lib.concatStringsSep "; " pushLines)}";
+
+      nixosSwitchWrapped = wrapCaches nixosSwitchCmd;
+      nixosUpdateWrapped = wrapCaches nixosUpdateCmd;
+      nixosBootWrapped = wrapCaches nixosBootCmd;
+
+      darwinSwitchCmd = "nh darwin switch ${flakeDir}";
+      darwinUpdateCmd = "nix flake update && nh darwin switch ${flakeDir}";
+
+      darwinSwitchWrapped = wrapCaches darwinSwitchCmd;
+      darwinUpdateWrapped = wrapCaches darwinUpdateCmd;
+
+      commonAliases = {
+        cleanup = "nix-sweep -p default system";
+        cleanup-ask = "nix-sweep -p ask system";
+        dedup = "nix store optimise";
+        cg = "nix-collect-garbage -d";
+        nix-gc-roots = "nix-store --gc --print-roots";
+        deadnixfixall = "nix run github:astro/deadnix -- -e ${flakeDir}";
+        deadnixscanall = "nix run github:astro/deadnix -- ${flakeDir}";
+        enabledevalcheck = ''nix eval .#homeConfigurations."${myconfig.constants.user}@${myconfig.constants.hostname}".config.home.packages --apply 'ps: builtins.sort (a: b: a < b) (map (p: p.name or p.pname) ps)' | tr '[]' '\n' | tr '"' '\n' | grep -v '^\s*$' | sort -u'';
+
+        fmt-dry = "cd ${flakeDir} && git add -A && nix fmt -- --check";
+        fmt = "cd ${flakeDir} && git add -A && nix fmt -- **/*.nix";
+        merge_dev-main = "cd ${flakeDir} && git stash && git checkout main && git pull origin main && git merge develop && git push; git checkout develop && git stash pop";
+        merge_main-dev = "cd ${flakeDir} && git stash && git checkout develop && git pull origin develop && git merge main && git push; git checkout develop && git stash pop";
+        cdnix = "cd ${flakeDir}";
+
+        fzf-prev = ''fzf --preview="cat {}"'';
+        fzf-editor = "${safeEditor} $(fzf -m --preview='cat {}')";
+        zlist = "zoxide query -l -s";
+        tksession = "tmux kill-session -t";
+        tks = "tmux kill-server";
+
+        sops-main = "cd ${flakeDir} && $EDITOR .sops.yaml";
+        sops-common = "cd ${flakeDir}/users/${myconfig.constants.user}/common/sops && sops ${myconfig.constants.user}-common-secrets-sops.yaml";
+        sops-host = "cd ${flakeDir} && sops hosts/${myconfig.constants.hostname}/${myconfig.constants.hostname}-secrets-sops.yaml";
+      };
+
+      nixosAliases = {
+        swboot = "cd ${flakeDir} && git add -A && ${nixosBootWrapped}";
+        swtest = "cd ${flakeDir} && git add -A && ${nixosTestCmd}";
+        swdry = "cd ${flakeDir} && git add -A && nh os switch ${flakeDir} --dry";
+        sw = "cd ${flakeDir} && git add -A && ${nixosSwitchWrapped}";
+        swfall = "cd ${flakeDir} && git add -A && ${wrapCaches "${nixosSwitchCmd} --fallback"}";
+        gsw = "cd ${flakeDir} && git add -A && ${nixosSwitchWrapped}";
+        gswfall = "cd ${flakeDir} && git add -A && ${wrapCaches "${nixosSwitchCmd} --fallback"}";
+        gswoff = "cd ${flakeDir} && git add -A && nh os switch ${flakeDir} -- --offline";
+        swsrc = "cd ${flakeDir} && git add -A && ${wrapCaches "${nixosSwitchCmd} --option substitute false"}";
+        swoff = "cd ${flakeDir} && git add -A && nh os switch ${flakeDir} -- --offline";
+        tswsrc = "cd ${flakeDir} && git add -A && time ${wrapCaches "${nixosSwitchCmd} --option substitute false"}";
+
+        nfc = "cd ${flakeDir} && git add -A && nix flake check";
+        nfcall = "cd ${flakeDir} && git add -A && nix flake check --all-systems";
+        upd = "cd ${flakeDir} && git add -A && ${nixosUpdateWrapped}";
+
+        swpure = "cd ${flakeDir} && git add -A && nh os switch ${flakeDir}";
+        swimpure = "cd ${flakeDir} && git add -A && sudo nixos-rebuild switch --flake . --impure";
+
+        pkgs-home = "$EDITOR ${flakeDir}/modules/${
+          if isDarwin then "darwin/toplevel/home-packages-darwin.nix" else "nixos/toplevel/home-packages-nixos.nix"
+        }";
+        pkgs-host = "$EDITOR ${flakeDir}/hosts/${myconfig.constants.hostname}/local-packages.nix";
+
+        se = "sudoedit";
+        reb-uefi = "systemctl reboot --firmware-setup";
+      }
+      // (lib.optionalAttrs atticEnabled { attic-push = atticPushAlias; })
+      // (lib.optionalAttrs cachixEnabled { cachix-push = cachixPushAlias; });
+
+      homeAliases = {
+        sw = "cd ${flakeDir} && git add -A && home-manager switch -b hm-backup --flake .#${myconfig.constants.user}@${myconfig.constants.hostname}";
+        swdry = "cd ${flakeDir} && git add -A && home-manager build --flake .#${myconfig.constants.user}@${myconfig.constants.hostname}";
+        upd = "cd ${flakeDir} && git add -A && nix flake update && home-manager switch -b hm-backup --flake .#${myconfig.constants.user}@${myconfig.constants.hostname}";
+        hm-gens = "home-manager generations";
+        nfc = "cd ${flakeDir} && git add -A && nix flake check";
+      };
+
+      darwinAliases = {
+        sw = "cd ${flakeDir} && git add -A && ${darwinSwitchWrapped}";
+        swfall = "cd ${flakeDir} && git add -A && ${wrapCaches "${darwinSwitchCmd} --fallback"}";
+        gsw = "cd ${flakeDir} && git add -A && ${darwinSwitchWrapped}";
+        gswfall = "cd ${flakeDir} && git add -A && ${wrapCaches "${darwinSwitchCmd} --fallback"}";
+        swdry = "cd ${flakeDir} && git add -A && nh darwin switch ${flakeDir} --dry";
+        gswoff = "cd ${flakeDir} && git add -A && nh darwin switch ${flakeDir} -- --offline";
+
+        nfc = "cd ${flakeDir} && git add -A && nix flake check --impure";
+        upd = "cd ${flakeDir} && git add -A && ${darwinUpdateWrapped}";
+
+        brew-upd = "brew update && brew upgrade";
+        brew-upd-res = "brew update-reset";
+        brew-inst = "brew install";
+        brew-inst-cask = "brew install --cask";
+        brew-search = "brew search";
+        brew-clean = "brew cleanup";
+
+        caff = "caffeinate";
+        xcodeaccept = "sudo xcodebuild -license accept";
+        changehosts = "sudo nvim /etc/hosts";
+        cleardns = "sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder";
+      }
+      // (lib.optionalAttrs atticEnabled { attic-push = atticPushAlias; })
+      // (lib.optionalAttrs cachixEnabled { cachix-push = cachixPushAlias; });
+    in
+    {
+      home.packages = [ npu ] ++ lib.optionals isNixOS [ tpmReenroll ];
+
+      home.shellAliases = commonAliases
+        // (if isNixOS then nixosAliases else { })
+        // (if isDarwin then darwinAliases else { })
+        // (if isHome then homeAliases else { })
+        // lib.optionalAttrs (myconfig.services.snapshots.enable or false) (
+        let
+          hasImpermanence = myconfig.services.impermanence.enable or false;
+          rootConfigName = if hasImpermanence then "persist" else "root";
+        in
+        {
+          snap-list-home = "snapper -c home list";
+          snap-list-root = "sudo snapper -c ${rootConfigName} list";
+        }
+      );
+    };
+}

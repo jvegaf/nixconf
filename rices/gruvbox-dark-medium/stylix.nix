@@ -1,0 +1,101 @@
+{
+  delib,
+  pkgs,
+  inputs,
+  ...
+}:
+let
+  themePath = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
+  themePolarity = "dark";
+in
+delib.rice {
+  name = "gruvbox-dark-medium";
+
+  nixos = {
+    imports = [ inputs.stylix.nixosModules.stylix ];
+
+    stylix = {
+      enable = true;
+      autoEnable = false;
+      polarity = themePolarity;
+      base16Scheme = themePath;
+      fonts = {
+        monospace = {
+          name = "FiraCode Nerd Font";
+          package = pkgs.nerd-fonts.fira-code;
+        };
+      };
+
+      targets = {
+        chromium.enable = true;
+        console.enable = true;
+        grub.enable = true;
+        gtk.enable = true;
+        nixos-icons.enable = true;
+        qt.enable = true;
+      };
+
+      homeManagerIntegration.autoImport = false;
+      homeManagerIntegration.followSystem = true;
+    };
+  };
+
+  home =
+    { myconfig, ... }:
+    {
+      imports = [
+        inputs.stylix.homeModules.stylix
+        # inputs.niri-flake.homeModules.stylix
+      ];
+
+      stylix = {
+        enable = true;
+        autoEnable = false;
+        polarity = themePolarity;
+        image = ../../wallpapers/latenight-urban.jpg;
+        base16Scheme = themePath;
+
+        fonts = {
+          monospace = {
+            name = "FiraCode Nerd Font";
+            package = pkgs.nerd-fonts.fira-code;
+          };
+          sizes = {
+            terminal = 12;
+            applications = 10;
+            popups = 10;
+            desktop = 10;
+          };
+        };
+
+        targets = {
+          gtk.enable = true;
+          gtk.flatpakSupport.enable = true;
+          bat.enable = true;
+          btop.enable = true;
+          fuzzel.enable = true;
+          fzf.enable = true;
+          hyprland.enable = true;
+          kitty.enable = true;
+          nixcord.enable = true;
+          lazygit.enable = true;
+          niri.enable = true;
+          obsidian = {
+            enable = true;
+            fonts.override.sizes = {
+              applications = 14;
+            };
+          };
+          qt.enable = true;
+          rofi.enable = true;
+          yazi.enable = true;
+        };
+
+        cursor = {
+          package = pkgs.quintom-cursor-theme;
+          name = "Quintom_Ink";
+          size = 24;
+        };
+      };
+    };
+}
