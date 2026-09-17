@@ -1,7 +1,7 @@
 { delib, pkgs, ... }:
 
 delib.host {
-  name = "desktop";
+  name = "minis";
 
   displays = [
     {

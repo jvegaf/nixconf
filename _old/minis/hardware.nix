@@ -6,7 +6,7 @@
   ...
 }:
 delib.host {
-  name = "desktop";
+  name = "minis";
 
   system = "x86_64-linux";
 

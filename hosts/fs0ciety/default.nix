@@ -1,22 +1,22 @@
 { delib, pkgs, ... }:
 
 delib.host {
-  name = "desktop";
+  name = "fs0ciety";
 
   displays = [
+    # {
+    #   name = "HDMI-A-1";
+    #   refreshRate = 60;
+    #   width = 1920;
+    #   height = 1080;
+    #   x = 3440;
+    #   y = 0;
+    # }
     {
-      name = "HDMI-A-1";
+      name = "eDP-1";
       refreshRate = 60;
       width = 1920;
       height = 1080;
-      x = 3440;
-      y = 0;
-    }
-    {
-      name = "DP-1";
-      refreshRate = 60;
-      width = 3440;
-      height = 1440;
       x = 0;
       y = 0;
     }
@@ -28,33 +28,35 @@ delib.host {
       args.shared.hostName = name;
 
       hardware = {
-        cpu.intel.enable = true;
-        gpu.nvidia.enable = true;
+        # cpu.intel.enable = true;
+        gpu.nvidia = {
+          enable = true;
+          open = false;
+          primeSync = false;
+          kernelPackage = "legacy";
+        };
         ssd.enable = true;
-        bluetooth.enable = true;
       };
 
-      swap.enable = true;
+      bluetooth.enable = true;
+
+      # swap.enable = false;
 
       boot = {
-        zswap.enable = true;
+        zswap.enable = false;
         limine.enable = true;
       };
 
-      xdg-portal.enable = true;
-
-      features = {
-        nix-enhancement.enable = true;
-        cli.enable = true;
-        gui.enable = true;
-      };
+      # features = {
+      #   nix-enhancement.enable = true;
+      #   cli.enable = true;
+      #   gui.enable = true;
+      # };
 
       services = {
-        flatpak.enable = true;
-        # nordvpn.enable = true;
+        displayManager.ly.enable = true;
         openssh.enable = true;
         pipewire.enable = true;
-        xremap.enable = true;
       };
     };
 

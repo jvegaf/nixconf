@@ -45,7 +45,7 @@ delib.rice {
     {
       imports = [
         inputs.stylix.homeModules.stylix
-        # inputs.niri-flake.homeModules.stylix
+        inputs.niri.homeModules.stylix
       ];
 
       stylix = {
@@ -86,7 +86,6 @@ delib.rice {
               applications = 14;
             };
           };
-          qt.enable = true;
           rofi.enable = true;
           yazi.enable = true;
         };

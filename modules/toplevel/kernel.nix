@@ -2,11 +2,12 @@
   delib,
   pkgs,
   inputs,
+  lib,
   ...
 }:
 delib.module {
   name = "kernel";
   nixos.always = { myconfig, ... }: {
-    boot.kernelPackages = pkgs.linuxPackages_latest;
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
   };
 }

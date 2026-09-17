@@ -1,6 +1,6 @@
 { delib, inputs, ... }:
 delib.host {
-  name = "desktop";
+  name = "surface";
 
   nixos = {
     imports = [ inputs.disko.nixosModules.disko ];

@@ -6,7 +6,7 @@
   ...
 }:
 delib.host {
-  name = "desktop";
+  name = "surface";
 
   system = "x86_64-linux";
 

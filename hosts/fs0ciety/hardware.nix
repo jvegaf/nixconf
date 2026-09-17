@@ -6,14 +6,14 @@
   ...
 }:
 delib.host {
-  name = "desktop";
+  name = "fs0ciety";
 
   system = "x86_64-linux";
 
-  home.home.stateVersion = "25.11";
+  # home.home.stateVersion = "25.11";
 
   nixos = {
-    system.stateVersion = "25.11";
+    system.stateVersion = "26.05";
 
     imports = [
       (modulesPath + "/installer/scan/not-detected.nix")

@@ -42,10 +42,6 @@ delib.module {
       rounding = intOption 10;
     };
 
-    theme.catppuccin = {
-      enable = true;
-    };
-
     screenshots = strOption "$HOME/Pictures/Screenshots";
     keyboardLayout = strOption "us";
     keyboardVariant = strOption "";
@@ -53,5 +49,29 @@ delib.module {
     weather = strOption "Madrid";
     useFahrenheit = boolOption false;
     timeZone = strOption "Europe/Madrid";
+
+    gitUserName = strOption "";
+    gitUserEmail = strOption "";
+
+    shell = strOption "zsh";
+    editor = strOption "nvim";
+
+    terminal = {
+      name = strOption "kitty"; # Terminal emulator app name
+      cursorStyle = strOption "block"; # block, beam, underline
+      cursorBlink = boolOption true; # Blinking cursor (true = better UX for locating cursor)
+      cursorBeamWidth = floatOption 3.0; # Beam cursor width in pixels or cell fraction
+      animation = boolOption true; # Enable transient prompt animation on command execution
+    };
+
+    theme = {
+      polarity = strOption "dark";
+      base16Theme = strOption "catppuccin-mocha";
+      catppuccin = boolOption true;
+      catppuccinFlavor = strOption "mocha";
+      catppuccinAccent = strOption "mauve";
+    };
+
+    nixImpure = boolOption false;
   };
 }

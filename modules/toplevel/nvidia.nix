@@ -11,11 +11,11 @@ delib.module {
     enable = boolOption false;
     open = boolOption false;
     primeSync = boolOption false;
-    kernelPackage = listOfOption str [
+    kernelPackage = enumOption [
       "legacy"
       "latest"
       "stable"
-    ];
+    ] "stable";
   };
 
   nixos.ifEnabled =
