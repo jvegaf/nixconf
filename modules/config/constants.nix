@@ -11,7 +11,7 @@ delib.module {
     mainLocale = strOption "en_US.UTF-8";
     lcTime = strOption "";
 
-    homeStateVersion = noDefault (strOption null);
+    homeStateVersion = strOption "26.05";
 
     browser = strOption "firefox";
     fileManager = strOption "nautilus";
@@ -40,6 +40,10 @@ delib.module {
     niri = {
       gap = intOption 8;
       rounding = intOption 10;
+    };
+
+    theme.catppuccin = {
+      enable = true;
     };
 
     screenshots = strOption "$HOME/Pictures/Screenshots";

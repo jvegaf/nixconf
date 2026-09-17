@@ -7,7 +7,7 @@
 delib.module {
   name = "services.qemu";
 
-  options = delib.singleEnableOption host.guiFeatured;
+  options = delib.singleEnableOption false;
 
   nixos.ifEnabled =
     { myconfig, ... }:

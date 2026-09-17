@@ -19,6 +19,15 @@
     stylix.inputs.nixpkgs.follows = "nixpkgs";
     mangowm.url = "github:mangowm/mango";
     mangowm.inputs.nixpkgs.follows = "nixpkgs";
+    niri.url = "github:sodiboo/niri-flake";
+    niri.inputs.nixpkgs.follows = "nixpkgs";
+    catppuccin.url = "github:catppuccin/nix";
+    catppuccin.inputs.nixpkgs.follows = "nixpkgs";
+    # nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    noctalia-shell.url = "github:noctalia-dev/noctalia-shell/legacy-v4";
+    noctalia-shell.inputs.nixpkgs.follows = "nixpkgs";
     voxtype.url = "github:peteonrails/voxtype";
     vicinae.url = "github:vicinaehq/vicinae";
     vicinae-extensions = {
@@ -32,6 +41,11 @@
     dms-plugin-registry = {
       url = "github:AvengeMedia/dms-plugin-registry";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.flake-parts.follows = "flake-parts";
@@ -59,6 +73,7 @@
           paths = [
             ./hosts
             ./modules
+            ./overlays
             ./rices
           ];
 
@@ -67,10 +82,11 @@
             (base.withConfig {
               args.enable = true;
             })
+            overlays
           ];
 
           specialArgs = {
-            inherit inputs;
+            inherit inputs moduleSystem;
           };
         };
     in

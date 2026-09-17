@@ -2,7 +2,7 @@
 delib.module {
   name = "services.gnome-keyring";
 
-  options = delib.singleEnableOption host.guiFeatured;
+  options = delib.singleEnableOption false;
 
   home.ifEnabled.services.gnome-keyring.enable = true;
 }

@@ -10,7 +10,7 @@ delib.module {
     boot.plymouth.enable = false;
 
     boot.loader = {
-      systemd-boot.enable = true;
+      systemd-boot.enable = lib.mkDefault true;
       efi.canTouchEfiVariables = true;
     };
   };

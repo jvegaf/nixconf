@@ -1,8 +1,9 @@
-{ delib
-, config
-, lib
-, pkgs
-, ...
+{
+  delib,
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 delib.module {
   name = "programs.hyprland";
@@ -10,7 +11,12 @@ delib.module {
     with delib;
     moduleOptions {
       monitors = listOfOption attrs [
-        { output = ""; mode = "preferred"; position = "auto"; scale = "auto"; }
+        {
+          output = "";
+          mode = "preferred";
+          position = "auto";
+          scale = "auto";
+        }
       ];
       execOnce = listOfOption str [ ];
       monitorWorkspaces = listOfOption attrs [ ];
@@ -25,58 +31,69 @@ delib.module {
   };
 
   home.ifEnabled =
-    { cfg
-    , parent
-    , myconfig
-    , ...
+    {
+      cfg,
+      parent,
+      myconfig,
+      ...
     }:
     let
       inherit (lib.generators) mkLuaInline;
       term = myconfig.constants.terminal.name or "alacritty";
 
       caelestiaActiveOnHyprland =
-        (parent.caelestia.enable or false)
-        && (parent.caelestia.enableOnHyprland or false);
+        (parent.caelestia.enable or false) && (parent.caelestia.enableOnHyprland or false);
       noctaliaActiveOnHyprland =
-        (parent.noctalia.enable or false)
-        && (parent.noctalia.enableOnHyprland or false);
+        (parent.noctalia.enable or false) && (parent.noctalia.enableOnHyprland or false);
       wallpaperOwnedByShell = caelestiaActiveOnHyprland || noctaliaActiveOnHyprland;
       waypaperActive = parent.waypaper.enable or false;
 
-      wallpaperCmds = lib.optionals (!wallpaperOwnedByShell && !waypaperActive)
-        (
+      wallpaperCmds =
+        lib.optionals (!wallpaperOwnedByShell && !waypaperActive) (
           [ "awww-daemon" ]
-            ++ map
-            (w:
-              let
-                isAnimated = w.videoURL != "" || w.gifURL != "";
-                mediaPath =
-                  if w.videoURL != "" then
-                    pkgs.fetchurl { url = w.videoURL; sha256 = w.videoSHA256; }
-                  else if w.gifURL != "" then
-                    pkgs.fetchurl { url = w.gifURL; sha256 = w.gifSHA256; }
-                  else
-                    pkgs.fetchurl { url = w.wallpaperURL; sha256 = w.wallpaperSHA256; };
-                isWildcard = w.targetMonitor == "*";
-                targetArgs = if isWildcard then "" else "-o ${w.targetMonitor} ";
-                sleepSecs = if isWildcard then "1" else "2";
-                outputArg = if isWildcard then "ALL" else w.targetMonitor;
-                playCmd =
-                  if isAnimated then
-                    "mpvpaper -f -o \"loop mute=yes panscan=1.0\" ${outputArg} ${mediaPath}"
-                  else
-                    "awww img ${targetArgs}${mediaPath}";
-              in
-              "sh -c 'sleep ${sleepSecs} && ${playCmd}'")
-            myconfig.constants.wallpapers
-        ) ++ lib.optionals (!wallpaperOwnedByShell && waypaperActive) [
-        "waypaper --restore"
-      ];
+          ++ map (
+            w:
+            let
+              isAnimated = w.videoURL != "" || w.gifURL != "";
+              mediaPath =
+                if w.videoURL != "" then
+                  pkgs.fetchurl {
+                    url = w.videoURL;
+                    sha256 = w.videoSHA256;
+                  }
+                else if w.gifURL != "" then
+                  pkgs.fetchurl {
+                    url = w.gifURL;
+                    sha256 = w.gifSHA256;
+                  }
+                else
+                  pkgs.fetchurl {
+                    url = w.wallpaperURL;
+                    sha256 = w.wallpaperSHA256;
+                  };
+              isWildcard = w.targetMonitor == "*";
+              targetArgs = if isWildcard then "" else "-o ${w.targetMonitor} ";
+              sleepSecs = if isWildcard then "1" else "2";
+              outputArg = if isWildcard then "ALL" else w.targetMonitor;
+              playCmd =
+                if isAnimated then
+                  "mpvpaper -f -o \"loop mute=yes panscan=1.0\" ${outputArg} ${mediaPath}"
+                else
+                  "awww img ${targetArgs}${mediaPath}";
+            in
+            "sh -c 'sleep ${sleepSecs} && ${playCmd}'"
+          ) myconfig.constants.wallpapers
+        )
+        ++ lib.optionals (!wallpaperOwnedByShell && waypaperActive) [
+          "waypaper --restore"
+        ];
 
       execOnceItems = [
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
         "pkill ibus-daemon"
-      ] ++ wallpaperCmds ++ cfg.execOnce;
+      ]
+      ++ wallpaperCmds
+      ++ cfg.execOnce;
 
       execOnceFn = mkLuaInline (
         "function()\n"
@@ -85,41 +102,131 @@ delib.module {
       );
 
       staticWindowRules = [
-        { match.class = "(mpv)|(imv)|(showmethekey-gtk)"; float = true; }
-        { match.class = "(showmethekey-gtk)"; border_size = 0; }
-        { match.class = "(showmethekey-gtk)"; no_focus = true; }
-        { match.class = "(showmethekey-gtk)"; pin = true; }
-        { match.class = "(showmethekey-gtk)"; no_initial_focus = true; }
-        { match.class = "(showmethekey-gtk)"; move = "990 60"; }
-        { match.class = "(showmethekey-gtk)"; size = "900 170"; }
+        {
+          match.class = "(mpv)|(imv)|(showmethekey-gtk)";
+          float = true;
+        }
+        {
+          match.class = "(showmethekey-gtk)";
+          border_size = 0;
+        }
+        {
+          match.class = "(showmethekey-gtk)";
+          no_focus = true;
+        }
+        {
+          match.class = "(showmethekey-gtk)";
+          pin = true;
+        }
+        {
+          match.class = "(showmethekey-gtk)";
+          no_initial_focus = true;
+        }
+        {
+          match.class = "(showmethekey-gtk)";
+          move = "990 60";
+        }
+        {
+          match.class = "(showmethekey-gtk)";
+          size = "900 170";
+        }
 
-        { match.class = "^(ueberzugpp_layer)$"; float = true; }
-        { match.class = "^(ueberzugpp_layer)$"; no_anim = true; }
-        { match.class = "^(ueberzugpp_layer)$"; no_shadow = true; }
-        { match.class = "^(ueberzugpp_layer)$"; no_blur = true; }
-        { match.class = "^(ueberzugpp_layer)$"; no_initial_focus = true; }
+        {
+          match.class = "^(ueberzugpp_layer)$";
+          float = true;
+        }
+        {
+          match.class = "^(ueberzugpp_layer)$";
+          no_anim = true;
+        }
+        {
+          match.class = "^(ueberzugpp_layer)$";
+          no_shadow = true;
+        }
+        {
+          match.class = "^(ueberzugpp_layer)$";
+          no_blur = true;
+        }
+        {
+          match.class = "^(ueberzugpp_layer)$";
+          no_initial_focus = true;
+        }
 
-        { match.class = "^(org.kde.gwenview)$"; float = true; }
-        { match.class = "^(org.kde.gwenview)$"; center = true; }
-        { match.class = "^(org.kde.gwenview)$"; size = "80% 80%"; }
+        {
+          match.class = "^(org.kde.gwenview)$";
+          float = true;
+        }
+        {
+          match.class = "^(org.kde.gwenview)$";
+          center = true;
+        }
+        {
+          match.class = "^(org.kde.gwenview)$";
+          size = "80% 80%";
+        }
 
-        { match.title = "^(Open File)(.*)$"; float = true; }
-        { match.title = "^(Select a File)(.*)$"; float = true; }
-        { match.title = "^(Choose wallpaper)(.*)$"; float = true; }
-        { match.title = "^(Open Folder)(.*)$"; float = true; }
-        { match.title = "^(Save As)(.*)$"; float = true; }
-        { match.title = "^(Library)(.*)$"; float = true; }
-        { match.title = "^(File Upload)(.*)$"; float = true; }
-        { match.title = "^(Save File)(.*)$"; float = true; }
-        { match.title = "^(Enter name of file)(.*)$"; float = true; }
-        { match.title = "^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload|Save File|Enter name of file)(.*)$"; center = true; }
-        { match.title = "^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload|Save File|Enter name of file)(.*)$"; size = "50% 50%"; }
+        {
+          match.title = "^(Open File)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Select a File)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Choose wallpaper)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Open Folder)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Save As)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Library)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(File Upload)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Save File)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Enter name of file)(.*)$";
+          float = true;
+        }
+        {
+          match.title = "^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload|Save File|Enter name of file)(.*)$";
+          center = true;
+        }
+        {
+          match.title = "^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload|Save File|Enter name of file)(.*)$";
+          size = "50% 50%";
+        }
 
-        { match.class = "^(xdg-desktop-portal-kde)$"; float = true; }
-        { match.class = "^(xdg-desktop-portal-kde)$"; center = true; }
-        { match.class = "^(xdg-desktop-portal-kde)$"; size = "50% 50%"; }
+        {
+          match.class = "^(xdg-desktop-portal-kde)$";
+          float = true;
+        }
+        {
+          match.class = "^(xdg-desktop-portal-kde)$";
+          center = true;
+        }
+        {
+          match.class = "^(xdg-desktop-portal-kde)$";
+          size = "50% 50%";
+        }
 
-        { match.class = ".*"; suppress_event = "maximize"; }
+        {
+          match.class = ".*";
+          suppress_event = "maximize";
+        }
         {
           match = {
             class = "^$";
@@ -132,65 +239,251 @@ delib.module {
           no_focus = true;
         }
 
-        { match.class = "^(xwaylandvideobridge)$"; opacity = "0.0 override"; }
-        { match.class = "^(xwaylandvideobridge)$"; no_anim = true; }
-        { match.class = "^(xwaylandvideobridge)$"; no_initial_focus = true; }
-        { match.class = "^(xwaylandvideobridge)$"; max_size = "1 1"; }
-        { match.class = "^(xwaylandvideobridge)$"; no_blur = true; }
-        { match.class = "^(xwaylandvideobridge)$"; no_focus = true; }
-      ]
-      ++ lib.optional
-        ((myconfig.constants.hyprland.terminalOpacity or 1.0) < 1.0)
         {
-          match.class = "^(${term})$";
-          opacity = "${toString myconfig.constants.hyprland.terminalOpacity} override";
-        };
+          match.class = "^(xwaylandvideobridge)$";
+          opacity = "0.0 override";
+        }
+        {
+          match.class = "^(xwaylandvideobridge)$";
+          no_anim = true;
+        }
+        {
+          match.class = "^(xwaylandvideobridge)$";
+          no_initial_focus = true;
+        }
+        {
+          match.class = "^(xwaylandvideobridge)$";
+          max_size = "1 1";
+        }
+        {
+          match.class = "^(xwaylandvideobridge)$";
+          no_blur = true;
+        }
+        {
+          match.class = "^(xwaylandvideobridge)$";
+          no_focus = true;
+        }
+      ]
+      ++ lib.optional ((myconfig.constants.hyprland.terminalOpacity or 1.0) < 1.0) {
+        match.class = "^(${term})$";
+        opacity = "${toString myconfig.constants.hyprland.terminalOpacity} override";
+      };
 
       staticWorkspaceRules = [
-        { workspace = "f[1]"; gaps_out = 0; gaps_in = 0; }
+        {
+          workspace = "f[1]";
+          gaps_out = 0;
+          gaps_in = 0;
+        }
       ];
 
       staticBeziers = [
-        { _args = [ "easeOutExpo" { type = "bezier"; points = [ [ 0.16 1 ] [ 0.3 1 ] ]; } ]; }
-        { _args = [ "easeInOutQuad" { type = "bezier"; points = [ [ 0.45 0 ] [ 0.55 1 ] ]; } ]; }
-        { _args = [ "easeOutBack" { type = "bezier"; points = [ [ 0.34 1.56 ] [ 0.64 1 ] ]; } ]; }
+        {
+          _args = [
+            "easeOutExpo"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.16
+                  1
+                ]
+                [
+                  0.3
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeInOutQuad"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.45
+                  0
+                ]
+                [
+                  0.55
+                  1
+                ]
+              ];
+            }
+          ];
+        }
+        {
+          _args = [
+            "easeOutBack"
+            {
+              type = "bezier";
+              points = [
+                [
+                  0.34
+                  1.56
+                ]
+                [
+                  0.64
+                  1
+                ]
+              ];
+            }
+          ];
+        }
       ];
 
       staticAnimations = [
-        { leaf = "windows"; enabled = true; speed = 3; bezier = "easeOutExpo"; }
-        { leaf = "windowsIn"; enabled = true; speed = 3; bezier = "easeOutBack"; style = "popin 80%"; }
-        { leaf = "windowsOut"; enabled = true; speed = 2; bezier = "easeOutExpo"; style = "popin 80%"; }
-        { leaf = "fade"; enabled = true; speed = 2; bezier = "easeOutExpo"; }
-        { leaf = "border"; enabled = true; speed = 3; bezier = "easeOutExpo"; }
-        { leaf = "workspaces"; enabled = true; speed = 4; bezier = "easeInOutQuad"; style = "slide"; }
+        {
+          leaf = "windows";
+          enabled = true;
+          speed = 3;
+          bezier = "easeOutExpo";
+        }
+        {
+          leaf = "windowsIn";
+          enabled = true;
+          speed = 3;
+          bezier = "easeOutBack";
+          style = "popin 80%";
+        }
+        {
+          leaf = "windowsOut";
+          enabled = true;
+          speed = 2;
+          bezier = "easeOutExpo";
+          style = "popin 80%";
+        }
+        {
+          leaf = "fade";
+          enabled = true;
+          speed = 2;
+          bezier = "easeOutExpo";
+        }
+        {
+          leaf = "border";
+          enabled = true;
+          speed = 3;
+          bezier = "easeOutExpo";
+        }
+        {
+          leaf = "workspaces";
+          enabled = true;
+          speed = 4;
+          bezier = "easeInOutQuad";
+          style = "slide";
+        }
       ];
 
       staticEnv = [
-        { _args = [ "NIXOS_OZONE_WL" "1" ]; }
-        { _args = [ "MOZ_ENABLE_WAYLAND" "1" ]; }
-        { _args = [ "QT_QPA_PLATFORM" "wayland;xcb" ]; }
-        { _args = [ "GDK_BACKEND" "wayland,x11,*" ]; }
-        { _args = [ "SDL_VIDEODRIVER" "wayland" ]; }
-        { _args = [ "CLUTTER_BACKEND" "wayland" ]; }
-        { _args = [ "_JAVA_AWT_WM_NONREPARENTING" "1" ]; }
-        { _args = [ "XDG_CURRENT_DESKTOP" "Hyprland" ]; }
-        { _args = [ "XDG_SESSION_TYPE" "wayland" ]; }
-        { _args = [ "XDG_SESSION_DESKTOP" "Hyprland" ]; }
-        { _args = [ "XDG_SCREENSHOTS_DIR" (builtins.replaceStrings [ "$HOME" ] [ "/home/${myconfig.constants.user}" ] myconfig.constants.screenshots) ]; }
+        {
+          _args = [
+            "NIXOS_OZONE_WL"
+            "1"
+          ];
+        }
+        {
+          _args = [
+            "MOZ_ENABLE_WAYLAND"
+            "1"
+          ];
+        }
+        {
+          _args = [
+            "QT_QPA_PLATFORM"
+            "wayland;xcb"
+          ];
+        }
+        {
+          _args = [
+            "GDK_BACKEND"
+            "wayland,x11,*"
+          ];
+        }
+        {
+          _args = [
+            "SDL_VIDEODRIVER"
+            "wayland"
+          ];
+        }
+        {
+          _args = [
+            "CLUTTER_BACKEND"
+            "wayland"
+          ];
+        }
+        {
+          _args = [
+            "_JAVA_AWT_WM_NONREPARENTING"
+            "1"
+          ];
+        }
+        {
+          _args = [
+            "XDG_CURRENT_DESKTOP"
+            "Hyprland"
+          ];
+        }
+        {
+          _args = [
+            "XDG_SESSION_TYPE"
+            "wayland"
+          ];
+        }
+        {
+          _args = [
+            "XDG_SESSION_DESKTOP"
+            "Hyprland"
+          ];
+        }
+        {
+          _args = [
+            "XDG_SCREENSHOTS_DIR"
+            (builtins.replaceStrings [ "$HOME" ] [ "/home/${myconfig.constants.user}" ]
+              myconfig.constants.screenshots
+            )
+          ];
+        }
       ];
 
       staticGestures = [
-        { fingers = 3; direction = "right"; action = "workspace"; }
-        { fingers = 3; direction = "left"; action = "workspace"; }
-        { fingers = 3; direction = "up"; action = "fullscreen"; }
-        { fingers = 3; direction = "down"; action = "close"; }
+        {
+          fingers = 3;
+          direction = "right";
+          action = "workspace";
+        }
+        {
+          fingers = 3;
+          direction = "left";
+          action = "workspace";
+        }
+        {
+          fingers = 3;
+          direction = "up";
+          action = "fullscreen";
+        }
+        {
+          fingers = 3;
+          direction = "down";
+          action = "close";
+        }
         {
           fingers = 4;
           direction = "up";
           action = mkLuaInline ''function() hl.exec_cmd("vicinae toggle") end'';
         }
-        { fingers = 4; direction = "down"; action = "special"; workspace_name = "magic"; }
-        { fingers = 4; direction = "pinchin"; action = "float"; }
+        {
+          fingers = 4;
+          direction = "down";
+          action = "special";
+          workspace_name = "magic";
+        }
+        {
+          fingers = 4;
+          direction = "pinchin";
+          action = "float";
+        }
       ];
     in
 
@@ -233,7 +526,10 @@ delib.module {
           workspace_rule = staticWorkspaceRules ++ cfg.monitorWorkspaces;
 
           on = {
-            _args = [ "hyprland.start" execOnceFn ];
+            _args = [
+              "hyprland.start"
+              execOnceFn
+            ];
           };
 
           config = {

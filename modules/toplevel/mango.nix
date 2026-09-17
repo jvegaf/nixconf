@@ -1,8 +1,9 @@
-{ delib
-, inputs
-, lib
-, moduleSystem
-, ...
+{
+  delib,
+  inputs,
+  lib,
+  moduleSystem,
+  ...
 }:
 delib.module {
   name = "programs.mango";
@@ -10,16 +11,16 @@ delib.module {
 
   nixos.always = { ... }: {
     imports = [
-      inputs.mango.nixosModules.mango
+      inputs.mangowm.nixosModules.mango
     ];
     home-manager.sharedModules = [
-      inputs.mango.hmModules.mango
+      inputs.mangowm.hmModules.mango
     ];
   };
 
   home.always = { ... }: {
     imports = lib.optionals (moduleSystem == "home") [
-      inputs.mango.hmModules.mango
+      inputs.mangowm.hmModules.mango
     ];
   };
 

@@ -25,8 +25,8 @@ delib.module {
         "nvidia"
       ];
 
-      nvidia = {
-        open = cfg.opem;
+      hardware.nvidia = {
+        open = cfg.open;
         nvidiaPersistenced = true;
         package =
           if cfg.kernelPackage == "legacy" then

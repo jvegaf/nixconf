@@ -7,7 +7,7 @@
 delib.module {
   name = "services.udisks2";
 
-  options = delib.singleEnableOption host.guiFeatured;
+  options = delib.singleEnableOption false;
 
   nixos.ifEnabled = {
     services.udisks2 = {

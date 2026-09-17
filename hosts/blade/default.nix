@@ -28,7 +28,7 @@ delib.host {
       args.shared.hostName = name;
 
       hardware = {
-        cpu.intel.enable = true;
+        # cpu.intel.enable = true;
         gpu.nvidia = {
           enable = true;
           open = true;
@@ -36,23 +36,22 @@ delib.host {
           kernelPackage = "latest";
         };
         ssd.enable = true;
-        bluetooth.enable = true;
       };
 
-      swap.enable = false;
+      bluetooth.enable = true;
+
+      # swap.enable = false;
 
       boot = {
         zswap.enable = false;
         limine.enable = true;
       };
 
-      xdg-portal.enable = true;
-
-      features = {
-        nix-enhancement.enable = true;
-        cli.enable = true;
-        gui.enable = true;
-      };
+      # features = {
+      #   nix-enhancement.enable = true;
+      #   cli.enable = true;
+      #   gui.enable = true;
+      # };
 
       services = {
         displayManager.ly.enable = true;
