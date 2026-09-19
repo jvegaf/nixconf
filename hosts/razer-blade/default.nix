@@ -1,21 +1,13 @@
 { delib, pkgs, ... }:
 
 delib.host {
-  name = "blade";
+  name = "razer-blade";
 
   displays = [
     {
-      name = "HDMI-A-1";
-      refreshRate = 60;
-      width = 1920;
-      height = 1080;
-      x = 3440;
-      y = 0;
-    }
-    {
       name = "eDP-1";
       refreshRate = 60;
-      width = 3440;
+      width = 2560;
       height = 1440;
       x = 0;
       y = 0;
@@ -27,6 +19,11 @@ delib.host {
     {
       args.shared.hostName = name;
 
+      disko = {
+        enable = true;
+        device = "/dev/disk/by-id/nvme-CT500P1SSD8_2004E284F1D7";
+      };
+
       hardware = {
         # cpu.intel.enable = true;
         gpu.nvidia = {
@@ -35,26 +32,23 @@ delib.host {
           primeSync = true;
           kernelPackage = "latest";
         };
+        bluetooth.enable = true;
         ssd.enable = true;
       };
-
-      bluetooth.enable = true;
 
       # swap.enable = false;
 
       boot = {
-        zswap.enable = false;
         limine.enable = true;
       };
 
-      # features = {
-      #   nix-enhancement.enable = true;
-      #   cli.enable = true;
-      #   gui.enable = true;
-      # };
+      features = {
+        nix-enhancement.enable = true;
+        cli.enable = true;
+        gui.enable = true;
+      };
 
       services = {
-        displayManager.ly.enable = true;
         openssh.enable = true;
         pipewire.enable = true;
       };

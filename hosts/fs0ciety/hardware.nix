@@ -2,6 +2,7 @@
   delib,
   lib,
   config,
+  inputs,
   modulesPath,
   ...
 }:
@@ -10,12 +11,13 @@ delib.host {
 
   system = "x86_64-linux";
 
-  # home.home.stateVersion = "25.11";
+  home.home.stateVersion = "26.05";
 
   nixos = {
     system.stateVersion = "26.05";
 
     imports = [
+      (inputs.hardware + "/common/cpu/intel/kaby-lake")
       (modulesPath + "/installer/scan/not-detected.nix")
     ];
 

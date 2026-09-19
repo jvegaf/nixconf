@@ -27,7 +27,7 @@ delib.module {
         {
           enable = true;
           settings.default_session = {
-            user = "th3g3ntl3man";
+            user = "sewo";
             command =
               if cfg.greeter == "regreet" then
                 commands.regreet

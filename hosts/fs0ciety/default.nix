@@ -1,22 +1,13 @@
 { delib, pkgs, ... }:
-
 delib.host {
   name = "fs0ciety";
 
   displays = [
-    # {
-    #   name = "HDMI-A-1";
-    #   refreshRate = 60;
-    #   width = 1920;
-    #   height = 1080;
-    #   x = 3440;
-    #   y = 0;
-    # }
     {
       name = "eDP-1";
       refreshRate = 60;
       width = 1920;
-      height = 1080;
+      height = 1200;
       x = 0;
       y = 0;
     }
@@ -27,8 +18,12 @@ delib.host {
     {
       args.shared.hostName = name;
 
+      disko = {
+        enable = true;
+        device = "/dev/nvme0n1";
+      };
+
       hardware = {
-        # cpu.intel.enable = true;
         gpu.nvidia = {
           enable = true;
           open = false;
@@ -36,31 +31,47 @@ delib.host {
           kernelPackage = "legacy";
         };
         ssd.enable = true;
+        bluetooth.enable = true;
+        laptop.enable = true;
       };
 
-      bluetooth.enable = true;
-
-      # swap.enable = false;
+      swap.enable = true;
 
       boot = {
-        zswap.enable = false;
-        limine.enable = true;
+        limine = {
+          enable = true;
+        };
       };
 
-      # features = {
-      #   nix-enhancement.enable = true;
-      #   cli.enable = true;
-      #   gui.enable = true;
-      # };
+      xdg-portal.enable = true;
+
+      features = {
+        nix-enhancement.enable = true;
+        cli.enable = true;
+        gui.enable = true;
+      };
 
       services = {
-        displayManager.ly.enable = true;
-        openssh.enable = true;
+        # flatpak.enable = true;
+        # nordvpn.enable = true;
+        # ollama.enable = true;
+        # openssh.enable = true;
         pipewire.enable = true;
+        xremap.enable = true;
       };
     };
 
   nixos = {
-    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod_latest;
+    boot = {
+      kernelPackages = pkgs.linuxKernel.packages.linux_zen;
+      kernelParams = [
+        "acpi_backlight=native"
+        "iommu=soft"
+        "resume_offset=16377208"
+      ];
+      resumeDevice = "/dev/disk/by-uuid/769e63fb-d3c5-4819-a5a1-10a2bd0a9cb6";
+    };
+
+    services.fprintd.enable = true;
   };
 }
