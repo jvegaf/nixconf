@@ -30,6 +30,7 @@ delib.module {
   nixos.ifEnabled.environment.defaultPackages = with pkgs; [
     rip2
     wl-clipboard-rs
+    nix-output-monitor
   ];
 
   home.ifEnabled = {

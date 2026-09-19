@@ -28,7 +28,7 @@ delib.module {
         settings =
           let
             firefox = lib.getExe homeConfig.programs.firefox.package;
-            wezterm = lib.getExe homeConfig.programs.wezterm.package;
+            kitty = lib.getExe homeConfig.programs.kitty.package;
             noctalia-shell = lib.getExe homeConfig.programs.noctalia-shell.package;
             noctalia-call =
               cmd:
@@ -58,7 +58,7 @@ delib.module {
             inherit outputs;
 
             binds = with homeConfig.lib.niri.actions; {
-              "Mod+Return".action = spawn wezterm;
+              "Mod+Return".action = spawn kitty;
               "Mod+b".action = spawn firefox;
               "Mod+d".action.spawn = noctalia-call "launcher toggle";
               "Mod+Shift+p".action.spawn = noctalia-call "sessionMenu toggle";

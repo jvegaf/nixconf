@@ -55,6 +55,9 @@ delib.host {
     };
 
   nixos = {
+    environment.shellAliases = {
+      freb = "sudo nixos-rebuild switch --flake ~/nixconf#fs0ciety --log-format internal-json -v |& nom --json";
+    };
     boot.kernelPackages = pkgs.linuxPackages_latest;
   };
 }

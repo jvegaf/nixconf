@@ -48,8 +48,10 @@ delib.host {
       features = {
         nix-enhancement.enable = true;
         cli.enable = true;
-        gui.enable = true;
+        # gui.enable = true;
       };
+
+      programs.xfce.enable = true;
 
       services = {
         # flatpak.enable = true;
@@ -62,16 +64,8 @@ delib.host {
     };
 
   nixos = {
-    boot = {
-      kernelPackages = pkgs.linuxKernel.packages.linux_zen;
-      kernelParams = [
-        "acpi_backlight=native"
-        "iommu=soft"
-        "resume_offset=16377208"
-      ];
-      resumeDevice = "/dev/disk/by-uuid/769e63fb-d3c5-4819-a5a1-10a2bd0a9cb6";
+    environment.shellAliases = {
+      freb = "sudo nixos-rebuild switch --flake ~/nixconf#fs0ciety --log-format internal-json -v |& nom --json";
     };
-
-    services.fprintd.enable = true;
   };
 }
